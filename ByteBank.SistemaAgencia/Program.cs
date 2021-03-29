@@ -13,7 +13,7 @@ namespace ByteBank.SistemaAgencia
     {
         static void Main(string[] args)
         {
-            Lista<ContaCorrente> lista = new Lista<ContaCorrente>();
+            List<ContaCorrente> lista = new List<ContaCorrente>();
 
             ContaCorrente contaDoGui = new ContaCorrente(546, 1234976);
 
@@ -27,23 +27,19 @@ namespace ByteBank.SistemaAgencia
             new ContaCorrente(874, 5679445),
             (contaDoGui),
             new ContaCorrente(874, 5679445),
-            new ContaCorrente(874, 5679445),
+            null,
             new ContaCorrente(874, 5679445),
             new ContaCorrente(874, 5679445),
             new ContaCorrente(874, 5679445),
         };
 
-            lista.AdicionarVarios(contas);
+            lista.AddVarious(contas);
 
-            var numeros = new List<int> { 1, 2, 3, 4 };
+            var contasOrdenadas = lista.Where(x => x != null).OrderBy(conta => conta.Numero);
 
-            numeros.AddVarious(5, 6, 7, 8);
-
-            numeros.Remove(3);
-
-            for(int i=0; i < numeros.Count; i++)
+            foreach (var conta in contasOrdenadas)
             {
-                Console.WriteLine($"{numeros[i]}");
+                Console.WriteLine($"{conta.Numero}");
             }
 
 
