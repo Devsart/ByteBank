@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,37 +14,43 @@ namespace ByteBank.SistemaAgencia
     {
         static void Main(string[] args)
         {
-            List<ContaCorrente> lista = new List<ContaCorrente>();
-
-            ContaCorrente contaDoGui = new ContaCorrente(546, 1234976);
-
-            ContaCorrente[] contas = new ContaCorrente[]
+            var ArquivoContas = "../../../contas.txt";
+            
+            using(var fluxoArquivo = new FileStream(ArquivoContas, FileMode.Open))
             {
-            new ContaCorrente(874, 5679787),
-            new ContaCorrente(874, 5679754),
-            new ContaCorrente(874, 5679445),
-            new ContaCorrente(874, 5679445),
-            new ContaCorrente(874, 5679445),
-            new ContaCorrente(874, 5679445),
-            (contaDoGui),
-            new ContaCorrente(874, 5679445),
-            null,
-            new ContaCorrente(874, 5679445),
-            new ContaCorrente(874, 5679445),
-            new ContaCorrente(874, 5679445),
-        };
-
-            lista.AddVarious(contas);
-
-            var contasOrdenadas = lista.Where(x => x != null).OrderBy(conta => conta.Numero);
-
-            foreach (var conta in contasOrdenadas)
-            {
-                Console.WriteLine($"{conta.Numero}");
+                var reader = new StreamReader(fluxoArquivo);
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    Console.WriteLine(line);
+                }
             }
 
-
             Console.ReadLine();
+        }
+
+        static void Reader(string arquivo)
+        {
+            using (var fluxoArquivo = new FileStream(arquivo, FileMode.Open))
+            {
+                var buffer = new byte[1024];
+                var readyBytes = -1;
+                while (readyBytes != 0)
+                {
+                    readyBytes = fluxoArquivo.Read(buffer, 0, 1024);
+                    WriteBuffer(buffer, readyBytes);
+                }
+
+            }
+        }
+        static void WriteBuffer(byte[] buffer, int readyBytes)
+        {
+            foreach(var myByte in buffer)
+            {
+                var utf8 = new UTF8Encoding();
+                var texto = utf8.GetString(buffer,0,readyBytes);
+                Console.Write(texto);
+            }
         }
     }
 }
