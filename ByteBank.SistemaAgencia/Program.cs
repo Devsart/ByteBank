@@ -15,18 +15,55 @@ namespace ByteBank.SistemaAgencia
         static void Main(string[] args)
         {
             var ArquivoContas = "../../../contas.txt";
+            var file_path = "../../../contasExportadas.csv";
             
             using(var fluxoArquivo = new FileStream(ArquivoContas, FileMode.Open))
+            using(var reader = new StreamReader(fluxoArquivo))
+            using(var fluxoDeArquivo2 = new FileStream(file_path, FileMode.Create))
+            using(var writer = new StreamWriter(fluxoDeArquivo2, Encoding.UTF8))
             {
-                var reader = new StreamReader(fluxoArquivo);
+                writer.WriteLine("Agencia,Conta-Corrente,Saldo,Titular");
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
-                    Console.WriteLine(line);
+                    var line2 = line.Replace(' ', ',');
+                    writer.WriteLine(line2);
+                    var contaCorrente = ConvertTextToAcc(line);
+
+                    Console.WriteLine($"Conta Corrente do {contaCorrente.Titular.Nome}: Ag: {contaCorrente.Agencia}, Numero: {contaCorrente.Numero}, Saldo(R$): {contaCorrente.Saldo}");
                 }
             }
 
             Console.ReadLine();
+        }
+
+        static ContaCorrente ConvertTextToAcc(string line)
+        {
+            var fields = line.Split(' ');
+            var agencia = int.Parse(fields[0]);
+            var numero = int.Parse(fields[1]);
+            var saldo = double.Parse(fields[2].Replace('.',','));
+            var name = fields[3];
+            var titular = new Cliente();
+            titular.Nome = name;
+
+            var result = new ContaCorrente(agencia,numero);
+            result.Depositar(saldo);
+            result.Titular = titular;
+
+            return result;
+        }
+
+        static void FileCreator(string line)
+        {
+            var file_path = "../../../contasExportadas.csv";
+            using(var fluxoDeArquivo = new FileStream(file_path, FileMode.Create))
+            using(var writer = new StreamWriter(fluxoDeArquivo, Encoding.UTF8))
+            {
+
+                writer.WriteLine(line);
+                writer.Flush();
+            }
         }
 
         static void Reader(string arquivo)
